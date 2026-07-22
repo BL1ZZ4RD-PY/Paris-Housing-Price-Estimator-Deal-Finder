@@ -26,7 +26,7 @@ This project solves this by **automating the complete data lifecycle**:
 
 ---
 
-## 🛠️ Pipeline Architecture
+## Pipeline Architecture
 
 ```text
 ┌─────────────────┐     ┌──────────────────┐     ┌───────────────────┐     ┌────────────────┐
