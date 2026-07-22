@@ -1,6 +1,6 @@
 <div align="center">
 
-  # 🏢 Paris Housing Market Price Estimator & Deal Finder
+  # Paris Housing Market Price Estimator & Deal Finder
 
   **An end-to-end Data Science pipeline to estimate Parisian rents and automatically detect the best market deals.**
 
@@ -14,7 +14,7 @@
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 Finding a apartment at a fair price in Paris is a major challenge due to high demand and significant price variance.
 
