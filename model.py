@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.metrics import r2_score, mean_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 
@@ -16,30 +17,30 @@ def nettoyage_donnees(file="Data_Loyer.csv"):
     df = df[(df["Prix m2"] >= 15 ) & (df["Prix m2"] <= 80 )]
     return df
 
-def features_target(df):
+def model_entrainement(df):
     encoder = OneHotEncoder(handle_unknown="ignore")
     y = df["Prix"]
     x = df[["Surface", "Arrondissement", "Pieces", "DPE"]]
 
-    transform_x = ColumnTransformer(
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
+
+    preprocessor = ColumnTransformer(
         transformers=[('Arrondissement', encoder, ["Arrondissement"])],
         remainder='passthrough')
 
-    X = transform_x.fit_transform(x)
-    return X, y
+    model = Pipeline(steps=[('preprocessor', preprocessor), ('regressor', RandomForestRegressor(n_estimators=100, max_depth=12, random_state=0))])
 
-def model_entrainement(x, y):
-    regressor = RandomForestRegressor(random_state=0)
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
-    regressor.fit(x_train, y_train)
-    score = r2_score(y_test, regressor.predict(x_test))
-    mean = mean_absolute_error(y_test, regressor.predict(x_test))
+    model.fit(x_train, y_train)
+
+    y_pred = model.predict(x_test)
+    score = r2_score(y_test, y_pred)
+    mean = mean_absolute_error(y_test, y_pred)
     print("R2 score:", score)
-    print("Marge d'erreur", mean)
-    return regressor
+    print("Mean absolute error:", mean)
+    return model, x, y
 
-def bon_plan(regressor, x, y, df):
-    X = regressor.predict(x)
+def bon_plan(model, x, y, df):
+    X = model.predict(x)
     df['Estimation'] = X
     df["Decote"] = ((df["Prix"] - df["Estimation"]) / df["Estimation"])*100
     df = df[df["Decote"] <= -15]
@@ -49,6 +50,5 @@ def bon_plan(regressor, x, y, df):
 
 if "__main__" == __name__:
     df = nettoyage_donnees()
-    x, y = features_target(df)
-    regressor = model_entrainement(x, y)
-    print(bon_plan(regressor, x, y, df))
+    model, x, y = model_entrainement(df)
+    print(bon_plan(model, x, y, df))
