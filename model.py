@@ -35,7 +35,7 @@ def model_entrainement(x, y):
     score = r2_score(y_test, regressor.predict(x_test))
     mean = mean_absolute_error(y_test, regressor.predict(x_test))
     print("R2 score:", score)
-    print("Mean absolute error:", mean)
+    print("Marge d'erreur", mean)
     return regressor
 
 def bon_plan(regressor, x, y, df):
