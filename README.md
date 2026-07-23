@@ -4,7 +4,7 @@
 
 ---
 
-## 🚀 Project Overview
+## Project Overview
 Finding an apartment at a fair price in Paris is a major challenge due to high demand and significant price variance. 
 
 This project automates the entire data lifecycle to detect market anomalies:
@@ -37,7 +37,7 @@ This project automates the entire data lifecycle to detect market anomalies:
 
 ---
 
-## 📈 Model Performance & Results Explanation
+## Model Performance & Results Explanation
 The pipeline is evaluated using 5-fold cross-validation on the entire dataset to compute unbiased metrics on the original rental price scale (Euros):
 * **Mean Absolute Error (MAE)**: **209.15 €**
 * **R² Score (Coefficient of Determination)**: **0.766 (76.6%)**
