@@ -1,34 +1,80 @@
-<div align="center">
+# Paris Rent Estimator & Deal Finder 🗼📊
 
-  # Paris Housing Market Price Estimator & Deal Finder
-
-  **An end-to-end Data Science pipeline to estimate Parisian rents and automatically detect the best market deals.**
-
-  ![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-  ![Playwright](https://img.shields.io/badge/Playwright-Automated-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)
-  ![Scikit-Learn](https://img.shields.io/badge/Scikit_Learn-Machine_Learning-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
-  ![Pandas](https://img.shields.io/badge/Pandas-Data_Analysis-150458?style=for-the-badge&logo=pandas&logoColor=white)
-
-</div>
+**An end-to-end Data Science pipeline to scrape real-time Parisian rental listings, estimate fair market prices using Machine Learning, and detect undervalued deals.**
 
 ---
 
-## Project Overview
+## 🚀 Project Overview
+Finding an apartment at a fair price in Paris is a major challenge due to high demand and significant price variance. 
 
-Finding a apartment at a fair price in Paris is a major challenge due to high demand and significant price variance.
-
-This project solves this by **automating the complete data lifecycle**:
-1. **Real-time Web Scraping** of active rental listings across all Parisian districts.
-2. **Data Cleaning & Filtering** to purge price/m² anomalies and outliers.
-3. **ML Modeling** to predict fair market rent based on property size and location (Randome Forest Regressor).
-4. **Deal Engine Detection** that isolates properties listed with a discount $\ge 15\%$ compared to estimated market value.
+This project automates the entire data lifecycle to detect market anomalies:
+1. **Automated Scraping**: Crawls live rental listings in Paris using [Playwright](https://playwright.dev/).
+2. **Data Cleaning & Filtering**: Purges outliers and cleans structural features using [Pandas](https://pandas.pydata.org/).
+3. **ML Modeling**: Estimates rental prices using a `RandomForestRegressor` with target log-transformation (`log1p`) and column-specific preprocessing.
+4. **Deal Detection Engine**: Isolates listings priced $\ge 15\%$ below their estimated market value using **unbiased out-of-fold predictions**.
 
 ---
 
-## Pipeline Architecture
+## 🛠️ Pipeline Architecture
 
 ```text
-┌─────────────────┐     ┌──────────────────┐     ┌───────────────────┐     ┌────────────────┐
-│   Web Scraping  │ ──► │  Data Preprocess │ ──► │ Machine Learning  │ ──► │  Deal Engine   │
-│  (Playwright)   │     │ (Pandas & Regex) │     │  (Random Forest)  │     │  (Export CSV)  │
-└─────────────────┘     └──────────────────┘     └───────────────────┘     └────────────────┘
+┌────────────────────────┐      ┌─────────────────────────┐      ┌────────────────────────┐      ┌────────────────────────┐
+│      Web Scraping      │ ───> │     Data Cleaning       │ ───> │    Machine Learning    │ ───> │      Deal Engine       │
+│  (Playwright - Python) │      │   (Pandas & Outliers)   │      │ (Random Forest & Pipe) │      │ (Out-of-fold anomalies)│
+└────────────────────────┘      └─────────────────────────┘      └────────────────────────┘      └────────────────────────┘
+```
+
+1. **Scraping** ([scrap.py](file:///Users/ennio/Documents/Projet_Scrap/scrap.py)): Extracts rental price, surface area ($m^2$), room count, district (arrondissement), and energy efficiency rating (DPE).
+2. **Preprocessing** ([model.py](file:///Users/ennio/Documents/Projet_Scrap/model.py)): 
+   * Filters out extreme rental outliers (prices > 3000€ and price/$m^2$ outside the 15€–80€ range).
+   * Feature engineering: calculates `Surface par pieces` (average room size) to capture layout density.
+3. **Modeling** ([model.py](file:///Users/ennio/Documents/Projet_Scrap/model.py)):
+   * Uses `ColumnTransformer` to One-Hot Encode spatial locations (`Arrondissement`) while preserving `DPE` as a numerical/ordinal feature (ratings scaled from G=1 to A=7).
+   * Fits a `RandomForestRegressor` on log-transformed targets to handle right-skewed pricing distributions.
+4. **Evaluation & Deal Search**:
+   * Uses `cross_val_predict` to obtain unbiased estimations for all properties.
+   * Compares the listed price against the model's prediction. Listings with a discount $\ge 15\%$ are exported to [Appartement_interessant.csv](file:///Users/ennio/Documents/Projet_Scrap/Appartement_interessant.csv).
+
+---
+
+## 📈 Model Performance & Insights
+* **Mean Absolute Error (MAE)**: **~209€**
+* **R² Score**: *[Insert your R² score here, e.g., 0.78]*
+
+### Is a ~200€ MAE good?
+**Yes!** In Parisian real estate, an average prediction error of 200€ is highly competitive. A model can only predict based on physical parameters (surface, rooms, district, DPE). Real-world rents are also heavily influenced by factors not present in the dataset:
+* **Furnished vs. Unfurnished**: Furnished rentals typically carry a 10-15% premium.
+* **Building Features**: Floor level, elevator access, outdoor space (balcony/terrace), and general condition (newly renovated vs. old).
+* **Micro-location**: Proximity to metro stations, parks, or noise levels (courtyard vs. main boulevard).
+
+Therefore, the **Deal Finder** acts as a **first-stage intelligent filter**. Any listed "deal" is then manually reviewed to confirm if the discount is a genuine bargain or justified by qualitative drawbacks.
+
+---
+
+## 📁 Repository Structure
+* [main.py](file:///Users/ennio/Documents/Projet_Scrap/main.py): Pipeline orchestrator.
+* [scrap.py](file:///Users/ennio/Documents/Projet_Scrap/scrap.py): Playwright script to fetch real-time listings.
+* [model.py](file:///Users/ennio/Documents/Projet_Scrap/model.py): Data cleaning, preprocessing pipeline, ML training, and deal extraction.
+* `Data_Loyer.csv`: Scraped raw listings dataset.
+* [Appartement_interessant.csv](file:///Users/ennio/Documents/Projet_Scrap/Appartement_interessant.csv): Exported deals under market value.
+
+---
+
+## ⚙️ Installation & Usage
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/BL1ZZ4RD-PY/Paris-Housing-Price-Estimator-Deal-Finder.git
+   cd Paris-Housing-Price-Estimator-Deal-Finder
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   playwright install chromium
+   ```
+
+3. **Run the pipeline**:
+   ```bash
+   python main.py
+   ```

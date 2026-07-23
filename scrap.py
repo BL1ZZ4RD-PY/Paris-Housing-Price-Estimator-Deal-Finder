@@ -111,7 +111,7 @@ def run_scraping():
                 "Pieces" : liste_pieces,
                 "DPE" : liste_DPE
             })
-            dpe_map = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7}
+            dpe_map = {'A': 7, 'B': 6, 'C': 5, 'D': 4, 'E': 3, 'F': 2, 'G': 1}
             df['DPE'] = df['DPE'].map(dpe_map)
             df.to_csv('Data_Loyer.csv', index=False)
 
