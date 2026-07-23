@@ -1,4 +1,4 @@
-# Paris Rent Estimator & Deal Finder 🗼📊
+# Paris Rent Estimator & Deal Finder 
 
 **An end-to-end Data Science pipeline to scrape real-time Parisian rental listings, estimate fair market prices using Machine Learning, and detect undervalued deals.**
 
