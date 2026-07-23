@@ -15,7 +15,7 @@ This project automates the entire data lifecycle to detect market anomalies:
 
 ---
 
-## 🛠️ Pipeline Architecture
+## Pipeline Architecture
 
 ```text
 ┌────────────────────────┐      ┌─────────────────────────┐      ┌────────────────────────┐      ┌────────────────────────┐
